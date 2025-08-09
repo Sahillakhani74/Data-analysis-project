@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataFlow Analytics - AI-Powered Data Analysis</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --dark-bg: #0f0f23;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #b4b8d1;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow-primary: 0 8px 32px rgba(31, 38, 135, 0.37);
+            --shadow-hover: 0 12px 40px rgba(31, 38, 135, 0.5);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(245, 87, 108, 0.1) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.3;
+            z-index: -1;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.5; }
+        }
+
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-primary);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--primary-gradient);
+            opacity: 0.5;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .upload-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.02);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-zone::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            animation: rotate 10s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .upload-zone:hover::before {
+            opacity: 1;
+        }
+
+        .upload-zone:hover {
+            border-color: rgba(102, 126, 234, 0.5);
+            background: rgba(102, 126, 234, 0.05);
+            transform: scale(1.02);
+        }
+
+        @keyframes rotate {
+            to { transform: rotate(360deg); }
+        }
+
+        .upload-zone i {
+            font-size: 3rem;
+            background: var(--primary-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .upload-zone p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .btn {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            min-width: 140px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--secondary-gradient);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 10px 25px rgba(245, 87, 108, 0.4);
+        }
+
+        .btn-success {
+            background: var(--success-gradient);
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 10px 25px rgba(74, 172, 254, 0.4);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-input-label {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            display: inline-block;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .file-input-label:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .status-message {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .status-success {
+            background: rgba(74, 172, 254, 0.1);
+            border: 1px solid rgba(74, 172, 254, 0.3);
+            color: #4facfe;
+        }
+
+        .status-error {
+            background: rgba(245, 87, 108, 0.1);
+            border: 1px solid rgba(245, 87, 108, 0.3);
+            color: #f5576c;
+        }
+
+        .status-info {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            color: #667eea;
+        }
+
+        .textarea {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 120px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .textarea:focus {
+            outline: none;
+            border-color: rgba(102, 126, 234, 0.5);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .textarea::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .dashboard-frame {
+            width: 100%;
+            height: 600px;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+        }
+
+        .report-content {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .report-content pre {
+            color: var(--text-primary);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .download-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #4facfe;
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            background: rgba(74, 172, 254, 0.1);
+            border: 1px solid rgba(74, 172, 254, 0.3);
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .download-link:hover {
+            background: rgba(74, 172, 254, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 172, 254, 0.3);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-gradient);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .feature-card i {
+            font-size: 2rem;
+            background: var(--primary-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .input-group input[type="text"],
+        .input-group input[type="password"],
+        .input-group input[type="number"] {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .input-group input[type="text"]:focus,
+        .input-group input[type="password"]:focus,
+        .input-group input[type="number"]:focus {
+            outline: none;
+            border-color: rgba(102, 126, 234, 0.5);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .card {
+                padding: 1.5rem;
+            }
+            
+            .upload-zone {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-chart-line"></i> DataFlow Analytics</h1>
+            <p>Transform your data into actionable insights with our AI-powered multi-agent analysis system. Upload, analyze, and discover patterns in your data with professional-grade tools.</p>
+        </div>
+
+        <div class="feature-grid">
+            <div class="feature-card">
+                <i class="fas fa-robot"></i>
+                <h3>AI-Powered Analysis</h3>
+                <p>Multi-agent system for comprehensive data analysis</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-chart-bar"></i>
+                <h3>Interactive Dashboards</h3>
+                <p>Executive and detailed visualization dashboards</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-brain"></i>
+                <h3>Natural Language Queries</h3>
+                <p>Ask questions about your data in plain English</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-download"></i>
+                <h3>Export Results</h3>
+                <p>Download cleaned data and comprehensive reports</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-upload"></i>
+                </div>
+                <div class="card-title">Upload Your Data (CSV/Excel)</div>
+            </div>
+            
+            <div class="upload-zone" id="uploadZone">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Drag and drop your CSV or Excel file here, or click to browse</p>
+                <div>
+                    <label for="dataFileInput" class="file-input-label">
+                        <i class="fas fa-file-alt"></i> Choose File
+                    </label>
+                    <input type="file" id="dataFileInput" class="file-input" accept=".csv,.xlsx,.xls">
+                    <span id="selectedFileName" style="margin-left: 1rem; color: var(--text-secondary);">No file chosen</span>
+                    <button class="btn" onclick="uploadFile()">
+                        <i class="fas fa-rocket"></i>
+                        <span>Analyze Data</span>
+                        <div class="spinner" id="uploadSpinner"></div>
+                    </button>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+            
+            <div id="uploadStatus" class="status-message hidden"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div class="card-title">Connect to MySQL Database</div>
+            </div>
+            <div class="input-group">
+                <label for="mysqlHost">Host:</label>
+                <input type="text" id="mysqlHost" value="localhost">
+            </div>
+            <div class="input-group">
+                <label for="mysqlPort">Port:</label>
+                <input type="number" id="mysqlPort" value="3306">
+            </div>
+            <div class="input-group">
+                <label for="mysqlUser">User:</label>
+                <input type="text" id="mysqlUser" value="root">
+            </div>
+            <div class="input-group">
+                <label for="mysqlPassword">Password:</label>
+                <input type="password" id="mysqlPassword">
+            </div>
+            <div class="input-group">
+                <label for="mysqlDatabase">Database:</label>
+                <input type="text" id="mysqlDatabase">
+            </div>
+            <div class="input-group">
+                <label for="mysqlTableName">Table Name (Optional):</label>
+                <input type="text" id="mysqlTableName" placeholder="e.g., users">
+            </div>
+            <div class="input-group">
+                <label for="mysqlSqlQuery">SQL Query (Optional):</label>
+                <textarea id="mysqlSqlQuery" class="textarea" placeholder="e.g., SELECT * FROM products WHERE price > 100"></textarea>
+            </div>
+            <button class="btn btn-secondary" onclick="analyzeMySQLData()">
+                <i class="fas fa-cogs"></i>
+                <span>Analyze MySQL Data</span>
+                <div class="spinner" id="mysqlSpinner"></div>
+            </button>
+            <div id="mysqlStatus" class="status-message hidden"></div>
+        </div>
+
+        <div class="card hidden fade-in" id="comprehensiveAnalysisCard">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-analytics"></i>
+                </div>
+                <div class="card-title">Comprehensive Analysis Report</div>
+            </div>
+            <div class="report-content" id="comprehensiveReportContent"></div>
+            <a id="downloadCleanedData" class="download-link hidden">
+                <i class="fas fa-download"></i>
+                Download Cleaned Dataset
+            </a>
+        </div>
+
+        <div class="grid">
+            <div class="card hidden fade-in" id="executiveDashboardCard">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <div class="card-title">Executive Dashboard</div>
+                </div>
+                <iframe id="executiveDashboardFrame" class="dashboard-frame"></iframe>
+            </div>
+
+            <div class="card hidden fade-in" id="detailedDashboardCard">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <div class="card-title">Detailed Analytics</div>
+                </div>
+                <iframe id="detailedDashboardFrame" class="dashboard-frame"></iframe>
+            </div>
+        </div>
+
+        <div class="card hidden fade-in" id="customAnalysisCard">
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="card-title">Ask Your Data Anything</div>
+            </div>
+            
+            <textarea id="customQueryInput" class="textarea" placeholder="Ask me anything about your data! Examples:
+• What are the top 5 performing products by revenue?
+• Show me trends in customer behavior over time
+• Which factors correlate most with sales performance?
+• Create a visualization of regional sales distribution"></textarea>
+            
+            <div style="margin-top: 1rem;">
+                <button class="btn btn-secondary" onclick="sendCustomQuery()">
+                    <i class="fas fa-magic"></i>
+                    <span>Generate Insights</span>
+                    <div class="spinner" id="querySpinner"></div>
+                </button>
+            </div>
+            
+            <div id="customAnalysisResults" class="hidden"></div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('dataFileInput');
+        const uploadSpinner = document.getElementById('uploadSpinner');
+        const querySpinner = document.getElementById('querySpinner');
+        const progressFill = document.getElementById('progressFill');
+        const uploadStatus = document.getElementById('uploadStatus');
+        const mysqlSpinner = document.getElementById('mysqlSpinner');
+        const mysqlStatus = document.getElementById('mysqlStatus');
+        
+        // Cards
+        const comprehensiveAnalysisCard = document.getElementById('comprehensiveAnalysisCard');
+        const executiveDashboardCard = document.getElementById('executiveDashboardCard');
+        const detailedDashboardCard = document.getElementById('detailedDashboardCard');
+        const customAnalysisCard = document.getElementById('customAnalysisCard');
+        
+        // Content elements
+        const comprehensiveReportContent = document.getElementById('comprehensiveReportContent');
+        const executiveDashboardFrame = document.getElementById('executiveDashboardFrame');
+        const detailedDashboardFrame = document.getElementById('detailedDashboardFrame');
+        const customQueryInput = document.getElementById('customQueryInput');
+        const customAnalysisResults = document.getElementById('customAnalysisResults');
+        const downloadCleanedData = document.getElementById('downloadCleanedData');
+        const selectedFileNameSpan = document.getElementById('selectedFileName');
+
+        // MySQL Input Fields
+        const mysqlHost = document.getElementById('mysqlHost');
+        const mysqlPort = document.getElementById('mysqlPort');
+        const mysqlUser = document.getElementById('mysqlUser');
+        const mysqlPassword = document.getElementById('mysqlPassword');
+        const mysqlDatabase = document.getElementById('mysqlDatabase');
+        const mysqlTableName = document.getElementById('mysqlTableName');
+        const mysqlSqlQuery = document.getElementById('mysqlSqlQuery');
+
+
+        // Drag and drop functionality
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.style.borderColor = 'rgba(102, 126, 234, 0.8)';
+            uploadZone.style.background = 'rgba(102, 126, 234, 0.1)';
+        });
+
+        uploadZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadZone.style.borderColor = 'var(--border-color)';
+            uploadZone.style.background = 'rgba(255, 255, 255, 0.02)';
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.style.borderColor = 'var(--border-color)';
+            uploadZone.style.background = 'rgba(255, 255, 255, 0.02)';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+            }
+        });
+
+        // Removed click listener from uploadZone to prevent potential conflicts.
+        // The file input is now primarily triggered by its associated label.
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                selectedFileNameSpan.textContent = fileInput.files[0].name;
+            } else {
+                selectedFileNameSpan.textContent = 'No file chosen';
+            }
+        });
+
+        // Progress simulation
+        function simulateProgress() {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 95) progress = 95;
+                progressFill.style.width = progress + '%';
+                
+                if (progress >= 95) {
+                    clearInterval(interval);
+                }
+            }, 500);
+            return interval;
+        }
+
+        async function uploadFile() {
+            const file = fileInput.files[0];
+
+            if (!file) {
+                showStatus(uploadStatus, 'Please select a file to upload.', 'error');
+                return;
+            }
+
+            // Start loading state
+            uploadSpinner.style.display = 'block';
+            showStatus(uploadStatus, 'Uploading and analyzing your data... This may take a few minutes.', 'info');
+            
+            const progressInterval = simulateProgress();
+            
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/upload-and-analyze/', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Failed to upload and analyze data.');
+                }
+
+                const data = await response.json();
+                
+                // Complete progress
+                clearInterval(progressInterval);
+                progressFill.style.width = '100%';
+                
+                showStatus(uploadStatus, data.message, 'success');
+
+                // Display comprehensive report
+                comprehensiveReportContent.innerHTML = `<pre>${data.comprehensive_report}</pre>`;
+                showCard(comprehensiveAnalysisCard);
+
+                // Display dashboards
+                if (data.executive_dashboard_html) {
+                    executiveDashboardFrame.srcdoc = data.executive_dashboard_html;
+                    showCard(executiveDashboardCard);
+                }
+
+                if (data.detailed_dashboard_html) {
+                    detailedDashboardFrame.srcdoc = data.detailed_dashboard_html;
+                    showCard(detailedDashboardCard);
+                }
+
+                // Show download link for cleaned data
+                if (data.cleaned_data_download_url) {
+                    downloadCleanedData.href = data.cleaned_data_download_url;
+                    downloadCleanedData.classList.remove('hidden');
+                }
+
+                // Show custom analysis section
+                showCard(customAnalysisCard);
+
+            } catch (error) {
+                clearInterval(progressInterval);
+                progressFill.style.width = '0%';
+                showStatus(uploadStatus, `Error: ${error.message}`, 'error');
+                console.error('Error:', error);
+            } finally {
+                uploadSpinner.style.display = 'none';
+            }
+        }
+
+        async function analyzeMySQLData() {
+            const host = mysqlHost.value.trim();
+            const port = parseInt(mysqlPort.value.trim());
+            const user = mysqlUser.value.trim();
+            const password = mysqlPassword.value;
+            const database = mysqlDatabase.value.trim();
+            const tableName = mysqlTableName.value.trim();
+            const sqlQuery = mysqlSqlQuery.value.trim();
+
+            if (!host || !user || !database) {
+                showStatus(mysqlStatus, 'Please fill in Host, User, and Database fields.', 'error');
+                return;
+            }
+
+            if (!tableName && !sqlQuery) {
+                showStatus(mysqlStatus, 'Please provide either a Table Name or an SQL Query.', 'error');
+                return;
+            }
+
+            mysqlSpinner.style.display = 'block';
+            showStatus(mysqlStatus, 'Connecting to MySQL and analyzing data... This may take a few minutes.', 'info');
+
+            try {
+                const response = await fetch('/analyze-mysql/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        host: host,
+                        port: port,
+                        user: user,
+                        password: password,
+                        database: database,
+                        table_name: tableName || null,
+                        sql_query: sqlQuery || null
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Failed to analyze MySQL data.');
+                }
+
+                const data = await response.json();
+                showStatus(mysqlStatus, data.message, 'success');
+
+                // Display comprehensive report
+                comprehensiveReportContent.innerHTML = `<pre>${data.comprehensive_report}</pre>`;
+                showCard(comprehensiveAnalysisCard);
+
+                // Display dashboards
+                if (data.executive_dashboard_html) {
+                    executiveDashboardFrame.srcdoc = data.executive_dashboard_html;
+                    showCard(executiveDashboardCard);
+                }
+
+                if (data.detailed_dashboard_html) {
+                    detailedDashboardFrame.srcdoc = data.detailed_dashboard_html;
+                    showCard(detailedDashboardCard);
+                }
+
+                // Show download link for cleaned data
+                if (data.cleaned_data_download_url) {
+                    downloadCleanedData.href = data.cleaned_data_download_url;
+                    downloadCleanedData.classList.remove('hidden');
+                }
+
+                // Show custom analysis section
+                showCard(customAnalysisCard);
+
+            } catch (error) {
+                showStatus(mysqlStatus, `Error: ${error.message}`, 'error');
+                console.error('Error:', error);
+            } finally {
+                mysqlSpinner.style.display = 'none';
+            }
+        }
+
+        async function sendCustomQuery() {
+            const query = customQueryInput.value.trim();
+            if (!query) {
+                showStatus(customAnalysisResults, 'Please enter a query.', 'error');
+                return;
+            }
+
+            querySpinner.style.display = 'block';
+            customAnalysisResults.innerHTML = '<div class="status-message status-info">🔍 Processing your query...</div>';
+            customAnalysisResults.classList.remove('hidden');
+
+            try {
+                const response = await fetch('/custom-query/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ query: query })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || 'Failed to process custom query.');
+                }
+
+                const data = await response.json();
+                let resultHtml = `<div class="report-content"><pre>${data.custom_report}</pre></div>`;
+                
+                if (data.chart_html) {
+                    resultHtml += `
+                        <div class="card-header" style="margin-top: 2rem;">
+                            <div class="card-icon"><i class="fas fa-chart-area"></i></div>
+                            <div class="card-title">Generated Visualization</div>
+                        </div>
+                        <iframe class="dashboard-frame" srcdoc="${data.chart_html.replace(/"/g, '"')}"></iframe>
+                    `;
+                }
+                
+                customAnalysisResults.innerHTML = resultHtml;
+
+            } catch (error) {
+                customAnalysisResults.innerHTML = `<div class="status-message status-error">❌ Error: ${error.message}</div>`;
+                console.error('Error:', error);
+            } finally {
+                querySpinner.style.display = 'none';
+            }
+        }
+
+        function showStatus(element, message, type) {
+            element.textContent = message;
+            element.className = `status-message status-${type}`;
+            element.classList.remove('hidden');
+        }
+
+        function showCard(card) {
+            card.classList.remove('hidden');
+            card.classList.add('fade-in');
+        }
+
+        // Enter key support for textarea
+        customQueryInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                sendCustomQuery();
+            }
+        });
+    </script>
+</body>
+</html>

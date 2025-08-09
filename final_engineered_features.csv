@@ -1,0 +1,6 @@
+tickers,eps,revenue,price,revenue_log,tickers_freq,people_bill gates,people_larry page,people_mukesh ambani,people_n.a.,people_ratan tata
+GOOGL,27.82,87,845,4.477336814478207,0.2,0,1,0,0,0
+WMT,4.61,484,65,6.184148890937483,0.2,0,0,0,1,0
+MSFT,-1,85,64,4.454347296253507,0.2,1,0,0,0,0
+RIL ,not available,50,1023,3.9318256327243257,0.2,0,0,1,0,0
+TATA,5.6,-1,n.a.,-inf,0.2,0,0,0,0,1

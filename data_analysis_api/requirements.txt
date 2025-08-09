@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+python-dotenv
+crewai
+langchain-google-genai
+pandas
+numpy
+scikit-learn
+matplotlib
+seaborn
+plotly
+mysql-connector-python

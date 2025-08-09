@@ -1,0 +1,17 @@
+crewai
+crewai[tools]
+pandas
+numpy
+scipy
+plotly
+matplotlib
+fastapi
+uvicorn
+python-dotenv
+ollama
+google-generativeai
+openpyxl
+pyarrow
+scikit-learn
+statsmodels
+langchain-ollama
